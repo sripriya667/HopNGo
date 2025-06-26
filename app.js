@@ -1,11 +1,16 @@
 const express = require("express");
-const app = express();
+const app = express(); // mergeParams is a boolean that allows us to access the params of the parent route
 const mongoose = require("mongoose");
-const Listing = require ("./models/listing");
 const path = require("path");
 const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
+const ExpressError  = require("./utils/ExpressError");
+const session = require("express-session");
+const flash = require("connect-flash");
 
+
+const listings = require("./routes/listing")
+const reviews = require("./routes/review")
 
 const MONGO_URL = 'mongodb://127.0.0.1:27017/wanderlust';
 
@@ -27,70 +32,42 @@ app.use(methodOverride("_method"));
 app.engine('ejs', ejsMate);
 app.use(express.static(path.join(__dirname, "public")));
 
+const sessionOptions = { 
+    secret : "mysupersecretstring",
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+        expires: Date.now() + 7 * 24 * 60 * 60 * 1000,
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+        httpOnly: true,
+    }
+}
+
 app.get("/", (req, res) => {
     res.send("Hello World!");
 })
 
-//INDEX ROUTE
-app.get("/listings", async(req, res) => {
-    const allListings = await Listing.find({});
-        res.render("./listings/index.ejs", {allListings});
+app.use(session(sessionOptions));
+app.use(flash());
+
+app.use((req, res, next) => {
+    res.locals.success = req.flash("success");
+    res.locals.error = req.flash("error");
+    next();
 })
 
-//NEW ROUTE
-app.get("/listings/new", (req, res) => {
-    res.render("./listings/new.ejs");
-    })
+app.use("/listings", listings);
+app.use("/listings/:id/reviews", reviews);
 
-//SHOW ROUTE
-app.get("/listings/:id", async (req, res) => {
-    let {id} = req.params;
-    const listing = await Listing.findById(id);
-    res.render("./listings/show.ejs", {listing});
+app.all("/random", (req, res, next) => {
+    next(new ExpressError(404, "page not found"))
 })
 
-//CREATE ROUTE
-app.post("/listings", async (req, res) => {
-    const newListing = new Listing(req.body.listing);
-    await newListing.save();
-    res.redirect("/listings");
+app.use((err, req, res, next) => {
+    let {status = 500, message = "Something went wrong"} = err;
+    res.status(status).render("error.ejs", {err});
+    // res.status(status).send(message);
 })
-
-//EDIT ROUTE
-app.get("/listings/:id/edit", async(req, res) => {
-    let {id} = req.params;
-    const listing = await Listing.findById(id);
-    res.render("./listings/edit.ejs", {listing});
-})
-
-//UPDATE ROUTE
-app.put("/listings/:id", async (req, res) =>{
-    let {id} = req.params;
-    await Listing.findByIdAndUpdate(id, {...req.body.listing});
-    res.redirect(`/listings/${id}`);
-})
-
-//DELETE ROUTE
-app.delete("/listings/:id", async (req, res) =>{
-    let {id} = req.params;
-    const deletedListing = await Listing.findByIdAndDelete(id);
-    console.log(deletedListing);
-    res.redirect("/listings");
-})
-
-// app.get("/testListing", async(req, res) => {
-//     let sampleListing = new Listing ({
-//         title: "My New Villa",
-//         description: "By the Beach",
-//         price: 1200,
-//         location: "Goa",
-//         country: "India",
-//         });
-
-//         await sampleListing.save();
-//         res.send("successful testing");
-//         console.log("sample was saved");
-// });
 
 app.listen(8080, () => {
     console.log("Server is running on port 8080");
