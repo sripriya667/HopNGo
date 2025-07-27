@@ -34,7 +34,6 @@ main()
 async function main() {
     await mongoose.connect(dbUrl, {
         useNewUrlParser: true,
-        useUnifiedTopology: true,
         tls: true
     });
 }
@@ -67,7 +66,7 @@ store.on("error", function(e) {
 
 const sessionOptions = { 
     store,
-    secret : process.env.SECRET,
+    secret : process.env.SECRET || 3000,
     resave: false,
     saveUninitialized: true,
     cookie: {
@@ -77,9 +76,7 @@ const sessionOptions = {
     }
 }
 
-// app.get("/", (req, res) => {
-//     res.send("Hello World!");
-// })
+
 
 app.use(session(sessionOptions));
 app.use(flash());
@@ -121,6 +118,13 @@ app.use((err, req, res, next) => {
     // res.status(status).send(message);
 })
 
-app.listen(3000, () => {
-    console.log("Server is running on port 3000");
-})
+// Root route
+app.get("/", (req, res) => {
+  res.redirect("/listings"); // Or: res.render("home");
+});
+
+// PORT fix for Render
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`✅ Server is running on port ${PORT}`);
+});
