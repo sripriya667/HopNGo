@@ -58,8 +58,8 @@ body {
 
 /* Card */
 .listing-card {
-    border: none !important;
     margin-bottom: 2rem;
+    border: none !important;
 }
 .card-img-top {
     border-radius: 1rem !important;
@@ -115,3 +115,4 @@ body {
     padding-left: 0;
     padding-right: 0;
 }
+

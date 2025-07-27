@@ -5,9 +5,9 @@ module.exports.listingSchema = Joi.object({
         title: Joi.string().required(),
         description: Joi.string().required(),
         price: Joi.number().required(),
-        location: Joi.string().required(),
-        country: Joi.string().required(),
-        image: Joi.string().allow("", null),
+        location: Joi.string().pattern(new RegExp("^[a-zA-Z0-9\\s,]+$")).required(),
+        country: Joi.string().pattern(new RegExp("^[a-zA-Z0-9\\s,]+$")).required(),
+        images: Joi.string().allow("", null),
     }).required(),
 });
 

@@ -1,3 +1,7 @@
+if(process.env.NODE_ENV !== "production") {
+    require("dotenv").config();
+}
+
 const express = require("express");
 const app = express(); // mergeParams is a boolean that allows us to access the params of the parent route
 const mongoose = require("mongoose");
@@ -5,14 +9,20 @@ const path = require("path");
 const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
 const ExpressError  = require("./utils/ExpressError");
+const MongoStore = require('connect-mongo');
 const session = require("express-session");
 const flash = require("connect-flash");
+const passport = require("passport");
+const LocalStrategy = require("passport-local");
+const User = require("./models/user");
 
 
-const listings = require("./routes/listing")
-const reviews = require("./routes/review")
+const listingRouter = require("./routes/listing")
+const reviewRouter = require("./routes/review")
+const userRouter = require("./routes/user")
 
-const MONGO_URL = 'mongodb://127.0.0.1:27017/wanderlust';
+// const MONGO_URL = 'mongodb://127.0.0.1:27017/wanderlust';
+const dbUrl = process.env.ATLASDB_URL;
 
 main()
 .then(() =>{
@@ -22,7 +32,11 @@ main()
 });
 
 async function main() {
-    await mongoose.connect(MONGO_URL);
+    await mongoose.connect(dbUrl, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        tls: true
+    });
 }
 
 app.set("view engine", "ejs");
@@ -32,8 +46,28 @@ app.use(methodOverride("_method"));
 app.engine('ejs', ejsMate);
 app.use(express.static(path.join(__dirname, "public")));
 
+
+app.use((req, res, next) => {
+  res.locals.currUser = req.user;
+  next();
+});
+
+
+const store = MongoStore.create({
+    mongoUrl: dbUrl,
+    crypto: {
+        secret: process.env.SECRET,
+    },
+    touchAfter: 24 * 3600, // time in seconds after which the session
+});
+
+store.on("error", function(e) {
+    console.log("Session store error", e);
+});
+
 const sessionOptions = { 
-    secret : "mysupersecretstring",
+    store,
+    secret : process.env.SECRET,
     resave: false,
     saveUninitialized: true,
     cookie: {
@@ -50,14 +84,32 @@ app.get("/", (req, res) => {
 app.use(session(sessionOptions));
 app.use(flash());
 
+app.use(passport.initialize()); //initializes the passport
+app.use(passport.session()); //uses the passport for session 
+passport.use(new LocalStrategy(User.authenticate())); //uses the passport for authentication
+
+passport.serializeUser(User.serializeUser()); //serializes the user
+passport.deserializeUser(User.deserializeUser()); //deserializes the user
+
 app.use((req, res, next) => {
     res.locals.success = req.flash("success");
     res.locals.error = req.flash("error");
+    res.locals.currUser = req.user;
     next();
-})
+});
 
-app.use("/listings", listings);
-app.use("/listings/:id/reviews", reviews);
+app.get("/demouser", async (req, res) =>{
+    let fakeUser = new User({
+        email: "test@gmail.com",
+        username: "testuser",
+    })
+    let registeredUser = await User.register(fakeUser, "12345678");
+    res.send(registeredUser);
+});
+
+app.use("/listings", listingRouter);
+app.use("/listings/:id/reviews", reviewRouter);
+app.use("/", userRouter);
 
 app.all("/random", (req, res, next) => {
     next(new ExpressError(404, "page not found"))
@@ -69,6 +121,6 @@ app.use((err, req, res, next) => {
     // res.status(status).send(message);
 })
 
-app.listen(8080, () => {
-    console.log("Server is running on port 8080");
+app.listen(3000, () => {
+    console.log("Server is running on port 3000");
 })
