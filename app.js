@@ -33,7 +33,6 @@ main()
 
 async function main() {
     await mongoose.connect(dbUrl, {
-        useNewUrlParser: true,
         tls: true
     });
 }
