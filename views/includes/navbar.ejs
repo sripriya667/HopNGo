@@ -18,6 +18,32 @@
     padding: 0.5rem 2rem 0.5rem 2rem;
     font-size: 1rem;
   }
+
+  
+  @media (max-width: 768px) {
+    .navbar-collapse {
+      background-color: #f8f9fa;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-top: 10px;
+    }
+
+    .navbar-nav {
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    form.d-flex {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.5rem;
+      margin: 1rem 0;
+    }
+
+    .inp-search, .btn-search {
+      width: 100%;
+    }
+  }
 </style>
 
 <nav class="navbar navbar-expand-md bg-body-light border-bottom sticky-top">

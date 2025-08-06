@@ -21,7 +21,7 @@ const listingRouter = require("./routes/listing")
 const reviewRouter = require("./routes/review")
 const userRouter = require("./routes/user")
 
-// const MONGO_URL = 'mongodb://127.0.0.1:27017/wanderlust';
+// const MONGO_URL = 'mongodb://127.0.0.1:27017/HopNGo';
 const dbUrl = process.env.ATLASDB_URL;
 
 main()

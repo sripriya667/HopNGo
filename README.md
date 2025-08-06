@@ -1,2 +1,0 @@
-# Major-Project
-Wanderlust Website
