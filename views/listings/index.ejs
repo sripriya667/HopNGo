@@ -21,6 +21,20 @@
   .filter p{
     font-size: 0.8rem;
   }
+  .filter {
+  text-decoration: none; /* remove underline from links */
+  color: inherit;        /* inherit text color so no default blue */
+}
+
+.filter div {
+  font-size: 1rem;     /* adjust icon size as needed */
+}
+
+.filter p {
+
+  font-size: 0.8rem;
+}
+
   .tax-info{
     display: none;
   }
@@ -33,6 +47,7 @@
     display: flex;
     align-items: center;
   }
+  
 @media (max-width: 768px) {
   .filter {
     flex: 0 0 22%;
@@ -79,18 +94,19 @@
     }
 
 </style>
- <div id="filters">
-  <div class="filter"><div><i class="fa-solid fa-fire"></i></div><p>Trending</p></div>
-  <div class="filter"><div><i class="fa-solid fa-bed"></i></div><p>Rooms</p></div>
-  <div class="filter"><div><i class="fa-solid fa-mountain-city"></i></div><p>Iconic Cities</p></div>
-  <div class="filter"><div><i class="fa-solid fa-mountain"></i></div><p>Mountains</p></div>
-  <div class="filter"><div><i class="fa-brands fa-fort-awesome"></i></div><p>Castles</p></div>
-  <div class="filter"><div><i class="fa-solid fa-person-swimming"></i></div><p>Amazing Pools</p></div>
-  <div class="filter"><div><i class="fa-solid fa-campground"></i></div><p>Camping</p></div>
-  <div class="filter"><div><i class="fa-solid fa-cow"></i></div><p>Farms</p></div>
-  <div class="filter"><div><i class="fa-regular fa-snowflake"></i></div><p>Arctic</p></div>
-  <div class="filter"><div><i class="fa-solid fa-igloo"></i></div><p>Domes</p></div>
-  <div class="filter"><div><i class="fa-solid fa-ship"></i></div><p>Boats</p></div>
+<div id="filters">
+  <a href="/listings/filter/trending" class="filter"><div><i class="fa-solid fa-fire"></i></div><p>Trending</p></a>
+  <a href="/listings/filter/rooms" class="filter"><div><i class="fa-solid fa-bed"></i></div><p>Rooms</p></a>
+  <a href="/listings/filter/iconiccities" class="filter"><div><i class="fa-solid fa-mountain-city"></i></div><p>Iconic Cities</p></a>
+  <a href="/listings/filter/mountains" class="filter"><div><i class="fa-solid fa-mountain"></i></div><p>Mountains</p></a>
+  <a href="/listings/filter/castles" class="filter"><div><i class="fa-brands fa-fort-awesome"></i></div><p>Castles</p></a>
+  <a href="/listings/filter/amazingpools" class="filter"><div><i class="fa-solid fa-person-swimming"></i></div><p>Amazing Pools</p></a>
+  <a href="/listings/filter/camping" class="filter"><div><i class="fa-solid fa-campground"></i></div><p>Camping</p></a>
+  <a href="/listings/filter/farms" class="filter"><div><i class="fa-solid fa-cow"></i></div><p>Farms</p></a>
+  <a href="/listings/filter/arctic" class="filter"><div><i class="fa-regular fa-snowflake"></i></div><p>Arctic</p></a>
+  <a href="/listings/filter/domes" class="filter"><div><i class="fa-solid fa-igloo"></i></div><p>Domes</p></a>
+  <a href="/listings/filter/boats" class="filter"><div><i class="fa-solid fa-ship"></i></div><p>Boats</p></a>
+
 
   <div class="tax-toggle">
     <div class="form-check-reverse form-switch">

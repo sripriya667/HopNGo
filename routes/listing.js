@@ -17,6 +17,10 @@ router
 
  //NEW ROUTE
 router.get("/new", isLoggedIn, listingController.renderNewForm);
+//SEARCH route
+router.get("/search", wrapAsync(listingController.searchListings));
+// Filter by category
+router.get('/filter/:category', wrapAsync(listingController.filterByCategory));
 
 //SHOW route
 router.get("/:id", isLoggedIn, wrapAsync(listingController.showListing));

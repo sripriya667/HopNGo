@@ -44,6 +44,47 @@ module.exports.showListings = async (req, res, next) => {
     return res.redirect("/listings");
   }
 }
+module.exports.searchListings = async (req, res) => {
+  const { q } = req.query;
+  let query = {};
+  if (q) {
+    const regex = new RegExp(q, 'i'); // 'i' for case-insensitive
+    query = { 
+      $or: [
+        { title: regex },
+        { location: regex }
+      ]
+    };
+  }
+  const listings = await Listing.find(query);
+  if (listings.length === 0) {
+    req.flash("error", "No listings found for your search.");
+    return res.redirect("/listings");
+  }
+  res.render('listings/index', { allListings: listings }); // reuse your index template
+};
+
+module.exports.filterByCategory = async (req, res) => {
+  const { category } = req.params;
+
+  // Normalize category for exact matching (lowercase, no hyphens/spaces)
+  const normalizedCategory = category.toLowerCase().replace(/-/g, '');
+
+  const filteredListings = await Listing.find({
+  $or: [
+    { category: normalizedCategory },         // category as string
+    { category: { $in: [normalizedCategory] } } // category as array
+  ]
+});
+
+  if (filteredListings.length === 0) {
+    req.flash('error', 'No listings found for this category.');
+    return res.redirect('/listings');
+  }
+
+  res.render('listings/index', { allListings: filteredListings });
+};
+
 
 module.exports.showListing = async (req, res) => {
   // console.log("🔥 showListing controller hit!");

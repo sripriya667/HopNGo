@@ -21,7 +21,8 @@ const listingSchema = new Schema({
   }
 ],
     country: String,
-    
+    category: [String], // Array of categories
+
     reviews: [{
         type: Schema.Types.ObjectId,
         ref: "Review",
